@@ -1,6 +1,7 @@
 import wx
 import wx.grid
 from shared.cnx import Cnx
+import pdb
 
 
 class XCmd(wx.Panel):
@@ -17,6 +18,7 @@ class XCmd(wx.Panel):
         layout = wx.BoxSizer(wx.VERTICAL)
 
         self.__txt_cmd = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.__txt_cmd.OSXDisableAllSmartSubstitutions()
         btn_run = wx.Button(self, label="Run")
         btn_run.SetToolTip("cmd + R")
         self.__grd_rslt = wx.grid.Grid(self,)
@@ -39,9 +41,9 @@ class XCmd(wx.Panel):
     def query_data(self, _) -> None:
         try:
             cmd = self.__txt_cmd.GetValue()
-            rslt, hdrs = self.__cnx.runQuery(cmd)
-            rslt_counter = len(rslt)
-            self.update_grid(len(hdrs), rslt_counter)
+            rslt, hdrs, num_rows = self.__cnx.runQuery(
+                cmd, self.__update_status)
+            self.update_grid(len(hdrs), num_rows)
 
             for i, h in enumerate(hdrs):
                 self.__grd_rslt.SetColLabelValue(i, h)
@@ -49,7 +51,6 @@ class XCmd(wx.Panel):
             for i, row in enumerate(rslt):
                 for j, cell in enumerate(row):
                     self.__grd_rslt.SetCellValue(i, j, f'{cell}')
-            self.__update_status(f"OK query\t {rslt_counter} records")
         except Exception as e:
             self.__update_status(f'{e.__str__()}')
 
