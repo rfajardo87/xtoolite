@@ -1,7 +1,6 @@
 import wx
 import wx.grid
 from shared.cnx import Cnx
-import pdb
 
 
 class XCmd(wx.Panel):
